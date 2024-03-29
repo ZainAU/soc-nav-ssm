@@ -1,0 +1,12 @@
+gitpython
+gym
+matplotlib
+numpy
+scipy
+torch
+torchvision
+pandas
+
+[test]
+pylint
+pytest
