@@ -179,7 +179,7 @@ def main():
         # sample k episodes into memory and optimize over the generated memory
         explorer.run_k_episodes(sample_episodes, 'train', update_memory=True, episode=episode)
         trainer.optimize_batch(train_batches)
-        episode += 1
+        episode += 1 #shouldnt this be +k
 
         if episode % target_update_interval == 0:
             explorer.update_target_model(model)

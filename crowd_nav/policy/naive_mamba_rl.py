@@ -5,6 +5,7 @@ from crowd_nav.policy.multi_human_rl import MultiHumanRL
 from mamba_ssm import Mamba
 import numpy as np
 from mamba_ssm.utils.generation import InferenceParams
+from mamba_ssm.modules.mamba_simple import Block
 
 
 class ValueNetork(nn.Module):
@@ -49,17 +50,13 @@ class ValueNetork(nn.Module):
             - The state of the robot should be bigger since it is completely observable
             - Maybe the state of the observer 
         '''
-        # if self.done == True and self.done_is_true == False:
-        #     self.done_is_true = True
-        #     print(f'done is {self.done}') 
-        # elif self.done_is_true == True:
-        #     self.done_is_true = False
-        #     print(f'done is false')
+        
         size = state.shape
         # print(f"The size of the input is {size}")
         values, _ = self.mambaLayer(state)
         '''
         The below condition is only applicable when we have states from multiple 
+        Maybe use the mamba block class
         '''
         # if self.phase in ['train', 'val']:
         #     values, _ = self.mambaLayer(state)
