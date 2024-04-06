@@ -8,12 +8,14 @@ def run_command(command):
         return False
     return True
 
-def main():
-    run_type = input("Do you want to train, test or visualize? (train/test/visualize): ").lower()
-    policy = input("Enter the policy (cadrl, lstm_rl, srl, sarl, lstm_mamba, Naive-MambaRL): ")
-    use_gpu = input("Do you want to use GPU? (yes/no): ").lower() == 'yes'
+def main(run_type:  str     = 'test',
+         policy:    str     = 'Naive-MambaRL', 
+         use_gpu:   str     = 'yes'):
+    run_type =  run_type.lower()
+    policy   =  policy
+    use_gpu  =  use_gpu.lower() == 'yes'
 
-    gpu_option = "--gpu" if use_gpu else ""
+    gpu_option = "--gpu" if use_gpu  else ""
 
     if run_type == 'test':
         model_dir = input("Enter the model directory: ")
@@ -37,7 +39,7 @@ def main():
         ]
     elif run_type == 'train':
         output_dir = input("Enter the output directory: ")
-        config = input("Enter the training config: ")
+        config = input("Enter the env config: ")
         commands = [
             f"python train.py --policy {policy} --output_dir data/{output_dir} --env_config configs/{config}.config {gpu_option}"
         ]

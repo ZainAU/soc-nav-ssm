@@ -12,9 +12,32 @@ from crowd_nav.utils.trainer import Trainer
 from crowd_nav.utils.memory import ReplayMemory
 from crowd_nav.utils.explorer import Explorer
 from crowd_nav.policy.policy_factory import policy_factory
-
+import json
 import numpy as np
 np.seterr(all='raise')
+from transformers.utils import WEIGHTS_NAME, CONFIG_NAME
+
+def save_pretrained_mamba(model, save_directory):
+    """
+    Save a MambaLMHeadModel in a format compatible with Transformers.
+
+    Args:
+        model: MambaLMHeadModel instance to be saved.
+        save_directory: Directory to save the model in.
+    """
+    # Ensure save_directory exists
+    if not os.path.exists(save_directory):
+        os.makedirs(save_directory)
+
+    # Save the model's state_dict
+    model_path = os.path.join(save_directory, WEIGHTS_NAME)
+    torch.save(model.state_dict(), model_path)
+
+    # Save the configuration of the model
+    config_path = os.path.join(save_directory, CONFIG_NAME)
+    with open(config_path, 'w') as f:
+        json.dump(model.config.__dict__, f)
+
 
 def main():
     parser = argparse.ArgumentParser('Parse configuration file')
@@ -136,7 +159,12 @@ def main():
         robot.set_policy(il_policy)
         explorer.run_k_episodes(il_episodes, 'train', update_memory=True, imitation_learning=True)
         trainer.optimize_epoch(il_epochs)
-        torch.save(model.state_dict(), il_weight_file)
+
+
+        if model.name not in ['Naive-MambaRL']:
+            torch.save(model.state_dict(), il_weight_file)
+        else:
+            save_pretrained_mamba(model, args.output_dir)
         logging.info('Finish imitation learning. Weights saved.')
         logging.info('Experience set size: %d/%d', len(memory), memory.capacity)
     explorer.update_target_model(model)
@@ -188,7 +216,10 @@ def main():
         # So that we can resume from episode 0
         if episode == 1 or episode % checkpoint_interval == 0:
             logging.info("Saving RL model weights.")
-            torch.save(model.state_dict(), rl_weight_file)
+            if model.name not in ['Naive-MambaRL']:
+                torch.save(model.state_dict(), il_weight_file)
+            else:
+                save_pretrained_mamba(model, il_weight_file)
 
     # final test
     explorer.run_k_episodes(env.case_size['test'], 'test', episode=episode)
