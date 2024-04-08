@@ -79,7 +79,7 @@ def main():
     if policy.trainable:
         if args.model_dir is None:
             parser.error('Trainable policy must be specified with a model weights directory')
-        if model.name not in ['Naive-MambaRL']:
+        if policy.name not in ['Naive-MambaRL']:
             model.load_state_dict(torch.load(model_weights))
         else:
             model.load_state_dict(load_state_dict_hf(args.model_dir, device=device))

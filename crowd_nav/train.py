@@ -161,7 +161,7 @@ def main():
         trainer.optimize_epoch(il_epochs)
 
 
-        if model.name not in ['Naive-MambaRL']:
+        if policy.name not in ['Naive-MambaRL']:
             torch.save(model.state_dict(), il_weight_file)
         else:
             save_pretrained_mamba(model, args.output_dir)
@@ -216,7 +216,7 @@ def main():
         # So that we can resume from episode 0
         if episode == 1 or episode % checkpoint_interval == 0:
             logging.info("Saving RL model weights.")
-            if model.name not in ['Naive-MambaRL']:
+            if policy.name not in ['Naive-MambaRL']:
                 torch.save(model.state_dict(), il_weight_file)
             else:
                 save_pretrained_mamba(model, il_weight_file)

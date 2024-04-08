@@ -54,4 +54,9 @@ def main(run_type:  str     = 'test',
             break
 
 if __name__ == "__main__":
-    main()
+    run_type = 'test'
+    policy = 'sarl'
+    gpu = 'yes'
+    main(run_type=run_type,
+         policy=policy,
+         use_gpu=gpu)

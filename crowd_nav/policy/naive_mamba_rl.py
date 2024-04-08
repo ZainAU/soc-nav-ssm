@@ -73,7 +73,7 @@ class ValueNetork(nn.Module):
       
        
         value = self.value_layer(hidden_states[:,-1,:])
-        print(f'shape of state {hidden_states[1,-1,:]}\nshape of value{value.shape}')
+        # print(f'shape of state {hidden_states[1,-1,:]}\nshape of value{value.shape}')
         return value    
 
     def create_block(
