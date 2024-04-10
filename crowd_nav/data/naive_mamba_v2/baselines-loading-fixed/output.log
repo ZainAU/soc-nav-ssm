@@ -117,3 +117,11 @@
 2024-04-06 18:14:04, INFO: TRAIN in episode 99 has success rate: 1.00, collision rate: 0.00, nav time: 14.25±0.000000, total reward: 0.2091)
 2024-04-06 18:26:05, INFO: TEST  in episode 100 has success rate: 0.78, collision rate: 0.22, nav time: 8.58±0.367976, total reward: 0.2055)
 2024-04-06 18:26:05, INFO: Frequency of being in danger: 0.31 and average min separate distance in danger: 0.08±0.1
+2024-04-08 10:17:27, INFO: Current git head hash code: %s
+2024-04-08 10:17:27, INFO: Using device: cuda:0
+2024-04-08 10:17:28, INFO: Policy:Naive-MambaRL
+2024-04-08 10:17:28, INFO: Env config file: data/naive_mamba_v2/baselines-loading-fixed/env_multi-test_dn-cr.config
+2024-04-08 10:19:08, INFO: Current git head hash code: %s
+2024-04-08 10:19:08, INFO: Using device: cuda:0
+2024-04-08 10:19:08, INFO: Policy:Naive-MambaRL
+2024-04-08 10:19:08, INFO: Env config file: data/naive_mamba_v2/baselines-loading-fixed/env_multi-test_dn-cr.config

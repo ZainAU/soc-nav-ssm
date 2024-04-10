@@ -55,7 +55,7 @@ def main(run_type:  str     = 'test',
 
 if __name__ == "__main__":
     run_type = 'test'
-    policy = 'sarl'
+    policy = 'Naive-MambaRL'
     gpu = 'yes'
     main(run_type=run_type,
          policy=policy,

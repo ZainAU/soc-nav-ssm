@@ -1,0 +1,4 @@
+2024-04-08 10:15:13, INFO: Current git head hash code: %s
+2024-04-08 10:15:13, INFO: Using device: cpu
+2024-04-08 10:15:13, INFO: Policy: LSTM-RL w/o pairwise interaction module
+2024-04-08 10:15:13, INFO: Env config file: data/lstmrl-copy/env_multi-test_bl-cr.config

@@ -108,6 +108,7 @@ def main():
     env.configure(env_config)
     robot = Robot(env_config, 'robot')
     env.set_robot(robot)
+    print("the issue is here")
 
     # read training parameters
     if args.train_config is None:
@@ -134,10 +135,13 @@ def main():
     explorer = Explorer(env, robot, device, memory, policy.gamma, target_policy=policy)
 
     # imitation learning
+    print(args.resume)
+    print("Hello")
     if args.resume:
         if not os.path.exists(rl_weight_file):
             logging.error('RL weights does not exist')
         model.load_state_dict(torch.load(rl_weight_file))
+        print("Weights restored")
         rl_weight_file = os.path.join(args.output_dir, 'resumed_rl_model.pth')
         logging.info('Loaded reinforcement learning trained weights. Resuming training')
     elif os.path.exists(il_weight_file):
@@ -179,7 +183,7 @@ def main():
         # MANUAL CURR: put back to 5000 for part 2
         episode = 5000
         logging.info(f'Resuming training at episode: {episode}')
-
+        print("This happens")
         robot.policy.set_epsilon(epsilon_end)
         explorer.run_k_episodes(100, 'train', update_memory=True, episode=0)
         logging.info('Experience set size: %d/%d', len(memory), memory.capacity)
