@@ -7,11 +7,12 @@ import numpy as np
 import time
 import os
 from tqdm import tqdm
+import numpy as np
+from crowd_sim.envs.utils.state import JointState #chang
 np.seterr(all='raise')
 
 class Explorer(object):
     def __init__(self, env, robot, device, memory=None, gamma=None, target_policy=None):
-        print("Changed this in the coezx")
         self.env = env
         self.robot = robot
         self.device = device
@@ -23,6 +24,15 @@ class Explorer(object):
     def update_target_model(self, target_model):
         self.target_model = copy.deepcopy(target_model)
 
+    def push_to_tensor(self,tensor, x):
+        '''
+        input:
+        tensor: np.array
+        x: some element
+        The function implements a FIFO queue
+        '''
+       
+        return np.concatenate((np.array([x]),tensor[:-1]))
     # @profile
     def run_k_episodes(self, k, phase, update_memory=False, imitation_learning=False, episode=None,
                        print_test=True, results_dir=None):
@@ -38,21 +48,42 @@ class Explorer(object):
         cumulative_rewards = []
         collision_cases = []
         timeout_cases = []
+        window_size = 10 #would eventually need to make a tag out of this
         for i in tqdm(range(k)):
             epoch_start = time.perf_counter()
             ob = self.env.reset(phase)
+            state = JointState(self.robot.get_full_state(), ob)
+            
+            rollout_window = np.zeros([window_size], dtype = JointState) # Shape should be window_size x joint state_size however join state is a single variable/data struct
+            rollout_states = rollout_window.copy()
             done = False
             states = []
             actions = []
             rewards = []
-            #logging.debug(f'i: {i}')
+
+
             while not done:
+                # Get the current state
+                state = JointState(self.robot.get_full_state(), ob)
+                # Append the current state to rollout_window
+                rollout_window = self.push_to_tensor(rollout_window,state)
+             
+                print(rollout_window)
+                print('/////////////')
+                print('/////////////')
+                print(rollout_states)
+                # Stack the rollout states
+                rollout_states = np.block([[rollout_states],[rollout_window]]) 
+
                 action = self.robot.act(ob)
                 ob, reward, done, info = self.env.step(action)
                 self.robot.policy.done = done # Doing this to reset the internal SSM state when  episode gets done
                 states.append(self.robot.policy.last_state)
                 actions.append(action)
                 rewards.append(reward)
+
+                
+                
                 if isinstance(info, Danger):
                     too_close += 1
                     min_dist.append(info.min_dist)
