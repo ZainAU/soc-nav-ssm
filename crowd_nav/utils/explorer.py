@@ -9,6 +9,7 @@ import os
 from tqdm import tqdm
 import numpy as np
 from crowd_sim.envs.utils.state import JointState #chang
+from crowd_nav.utils.rollout_window import RolloutWindow
 np.seterr(all='raise')
 
 class Explorer(object):
@@ -53,9 +54,10 @@ class Explorer(object):
             epoch_start = time.perf_counter()
             ob = self.env.reset(phase)
             state = JointState(self.robot.get_full_state(), ob)
+            Rollout = RolloutWindow(window_size = window_size)
+            # rollout_window = np.zeros([window_size], dtype = JointState) # Shape should be window_size x joint state_size however join state is a single variable/data struct
+            rollout_states = Rollout.rollout_window.copy()
             
-            rollout_window = np.zeros([window_size], dtype = JointState) # Shape should be window_size x joint state_size however join state is a single variable/data struct
-            rollout_states = rollout_window.copy()
             done = False
             states = []
             actions = []
@@ -66,16 +68,11 @@ class Explorer(object):
                 # Get the current state
                 state = JointState(self.robot.get_full_state(), ob)
                 # Append the current state to rollout_window
-                rollout_window = self.push_to_tensor(rollout_window,state)
+                Rollout.push_to_rollout(state)
              
-                print(rollout_window)
-                print('/////////////')
-                print('/////////////')
-                print(rollout_states)
-                # Stack the rollout states
-                rollout_states = np.block([[rollout_states],[rollout_window]]) 
+                rollout_states = np.block([[rollout_states],[Rollout.rollout_window]]) 
 
-                action = self.robot.act(ob)
+                action = self.robot.act(Rollout)
                 ob, reward, done, info = self.env.step(action)
                 self.robot.policy.done = done # Doing this to reset the internal SSM state when  episode gets done
                 states.append(self.robot.policy.last_state)

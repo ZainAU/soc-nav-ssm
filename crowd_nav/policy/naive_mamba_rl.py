@@ -127,7 +127,7 @@ class MambaRL(MultiHumanRL):
         logging.info(f'Policy:{self.name}')
         return
     
-    def predict(self, state):
+    def predict(self, rollout):
         """
         Input state is the joint state of robot concatenated with the observable state of other agents
 
@@ -140,6 +140,6 @@ class MambaRL(MultiHumanRL):
             # sort human order by decreasing distance to the robot
             return np.linalg.norm(np.array(human.position) - np.array(state.self_state.position))
 
-        state.human_states = sorted(state.human_states, key=dist, reverse=True)
+        # state.human_states = sorted(state.human_states, key=dist, reverse=True)
         
-        return super().predict(state)
+        return super().predict(rollout)

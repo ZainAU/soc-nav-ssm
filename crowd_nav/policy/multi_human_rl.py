@@ -2,18 +2,30 @@ import torch
 import numpy as np
 from crowd_sim.envs.utils.action import ActionRot, ActionXY
 from crowd_nav.policy.cadrl import CADRL
+from crowd_nav.utils.rollout_window import RolloutWindow
 
 
 class MultiHumanRL(CADRL):
     def __init__(self):
         super().__init__()
 
-    def predict(self, state):
+    def predict(self, Rollout : RolloutWindow):
         """
         A base class for all methods that takes pairwise joint state as input to value network.
         The input to the value network is always of shape (batch_size, # humans, rotated joint state length)
 
         """
+        '''
+        Proposed changes:
+        Accpts a rollout window,
+        instead of state.self_state, make a current state 
+        maybe make a rollout window class
+        
+        '''
+   
+        state = Rollout.rollout_window[0]
+   
+
         if self.phase is None or self.device is None:
             raise AttributeError('Phase, device attributes have to be set!')
         if self.phase == 'train' and self.epsilon is None:

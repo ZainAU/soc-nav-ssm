@@ -130,7 +130,7 @@ class CADRL(Policy):
 
         return next_state
 
-    def predict(self, state):
+    def predict(self, states):
         """
         Input state is the joint state of robot concatenated by the observable state of other agents
 
@@ -138,6 +138,7 @@ class CADRL(Policy):
         thus the reward function is needed
 
         """
+        state = states[0]
         if self.phase is None or self.device is None:
             raise AttributeError('Phase, device attributes have to be set!')
         if self.phase == 'train' and self.epsilon is None:
