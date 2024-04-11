@@ -11,6 +11,7 @@ np.seterr(all='raise')
 
 class Explorer(object):
     def __init__(self, env, robot, device, memory=None, gamma=None, target_policy=None):
+        print("Changed this in the coezx")
         self.env = env
         self.robot = robot
         self.device = device
