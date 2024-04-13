@@ -155,8 +155,11 @@ class Explorer(object):
 
         if phase in ['val', 'test']:
             num_step = sum(success_times + collision_times + timeout_times) / self.robot.time_step
-            logging.info('Frequency of being in danger: %.2f and average min separate distance in danger: %.2f±%.1f', too_close / num_step, average(min_dist), np.std(min_dist))
-
+            try:
+                logging.info('Frequency of being in danger: %.2f and average min separate distance in danger: %.2f±%.1f', too_close / num_step, average(min_dist), np.std(min_dist))
+            except:
+                print(f'min_distance = {min_dist}')
+                logging.info('some error occured while calcutating the std ')
         # array of [env, succ, coll, time, std_time, rew, std_rew, disc_freq,
         #           danger_d_min, std_danger, d_min_overall, std_overall]
         if results_dir is not None:
