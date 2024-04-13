@@ -222,13 +222,13 @@ class Explorer(object):
                     gamma_bar = pow(self.gamma, self.robot.time_step * self.robot.v_pref)
                     value = reward + gamma_bar * self.target_model(next_state.unsqueeze(0)).data.item()
             # Make a function to pad 
-            if self.window_size != 1:
-                state = self.pad_state(state)
+            # if self.window_size != 1:
+            #     state = self.pad_state(state)
                 # print(f'state shape in update memory {state.shape}')
 
             value = torch.Tensor([value]).to(self.device)
 
-            self.memory.push((state, value))
+            self.memory.push(([state], value))
     def pad_state(self, state):
         if len(state) != self.window_size:
             padd = (0, 0, 0, 0, 0, self.window_size -state.shape[0])

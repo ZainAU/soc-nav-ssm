@@ -1,4 +1,5 @@
 import logging
+import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.autograd import Variable
@@ -32,7 +33,9 @@ class Trainer(object):
             epoch_loss = 0
             for data in self.data_loader:
                 inputs, values = data
-                # print(f'shape of input {inputs.shape}')
+                # import numpy as np
+                inputs = inputs[0]
+                
                 inputs = Variable(inputs)
                 values = Variable(values)
 
@@ -55,20 +58,21 @@ class Trainer(object):
             self.data_loader = DataLoader(self.memory, self.batch_size, shuffle=True)
         losses = 0
         for _ in range(num_batches):
-            inputs, values = next(iter(self.data_loader))
-            inputs = Variable(inputs)
-            values = Variable(values)
+            for inputs, values in iter(self.data_loader):
+                inputs = inputs[0]
+                inputs = Variable(inputs)
+                values = Variable(values)
 
-            self.optimizer.zero_grad()
-            
-                  
-            outputs = self.model(inputs)
-            loss = self.criterion(outputs, values)
-            loss.backward()
-            self.optimizer.step()
-            losses += loss.data.item()
+                self.optimizer.zero_grad()
+                
+                    
+                outputs = self.model(inputs)
+                loss = self.criterion(outputs, values)
+                loss.backward()
+                self.optimizer.step()
+                losses += loss.data.item()
 
-        average_loss = losses / num_batches
-        #logging.debug('Average loss : %.2E', average_loss)
+            average_loss = losses / num_batches
+            #logging.debug('Average loss : %.2E', average_loss)
 
         return average_loss
