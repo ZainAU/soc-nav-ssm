@@ -73,6 +73,8 @@ class CADRL(Policy):
         self.cell_num = config.getint('om', 'cell_num')
         self.cell_size = config.getfloat('om', 'cell_size')
         self.om_channel_size = config.getint('om', 'om_channel_size')
+        self.window_size = config.getint('rollout_window','window_size')
+        logging.info(f'The window size is {self.window_size}')
 
     def set_device(self, device):
         self.device = device

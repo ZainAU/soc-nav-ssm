@@ -3,12 +3,58 @@ import numpy as np
 from crowd_sim.envs.utils.action import ActionRot, ActionXY
 from crowd_nav.policy.cadrl import CADRL
 from crowd_nav.utils.rollout_window import RolloutWindow
+from crowd_sim.envs.utils.state import JointState
+from typing import List
 
 
 class MultiHumanRL(CADRL):
     def __init__(self):
         super().__init__()
 
+    def next_state(self, Rollout:RolloutWindow, action, occupancy_maps):
+
+        '''
+        
+        returns:
+            - Reward of the next state
+            - rotated_NextStates: Tensor shpae (T, batch, num_humans, dimension )
+        '''
+        # rotated_NextStates = list()
+        
+        current_state = Rollout.rollout_window[0]
+
+        next_self_state = self.propagate(current_state.self_state, action) #This was one of the difference between GA3C CADRL paper and crowdnav
+        if self.query_env:
+            next_human_states, reward, done, info = self.env.onestep_lookahead(action)
+        else:
+            next_human_states = [self.propagate(human_state, ActionXY(human_state.vx, human_state.vy))
+                                for human_state in current_state.human_states]
+            reward = self.compute_reward(next_self_state, next_human_states)
+        next_state = JointState(next_self_state,next_human_states)
+        next_state_window = Rollout.next_state_window(next_state)
+        for i in range(Rollout.non_zero_states):
+            next_self_state = next_state_window[i].self_state
+            next_human_states = next_state_window[i].human_states
+            batch_next_states = torch.cat([torch.Tensor([next_self_state + next_human_state]).to(self.device)
+                                            for next_human_state in next_human_states], dim=0)
+            # I don't understand why the authors added the two states? Maybe Chen et al didn't do this and the diverse 4 paper did this
+            rotated_batch_input = self.rotate(batch_next_states).unsqueeze(0)
+            if self.with_om:
+                if occupancy_maps is None:
+                    occupancy_maps = self.build_occupancy_maps(next_human_states).unsqueeze(0)
+                rotated_batch_input = torch.cat([rotated_batch_input, occupancy_maps.to(self.device)], dim=2)
+            
+            if i == 0:
+                rotated_NextStates = rotated_batch_input.unsqueeze(0)
+            else:
+                rotated_NextStates = torch.cat((rotated_NextStates,rotated_batch_input.unsqueeze(0)), dim = 1).to(self.device)
+                # tensor should be (#batch,Time, agents, dim )
+            
+            # print(f'shape of the tensor{rotated_NextStates.shape}\nThe non zero {Rollout.non_zero_states}')
+            # rotated_NextStates.append(rotated_batch_input)
+        # print(i)
+        return rotated_NextStates,reward
+    
     def predict(self, Rollout : RolloutWindow):
         """
         A base class for all methods that takes pairwise joint state as input to value network.
@@ -17,15 +63,16 @@ class MultiHumanRL(CADRL):
         """
         '''
         Proposed changes:
-        Accpts a rollout window,
+        Accpts a Rollout window,
         instead of state.self_state, make a current state 
-        maybe make a rollout window class
+        maybe make a Rollout window class
         
         '''
-   
+        # state represents the current state
         state = Rollout.rollout_window[0]
+        # print(self.rollout_transform(Rollout).shape)
    
-
+        
         if self.phase is None or self.device is None:
             raise AttributeError('Phase, device attributes have to be set!')
         if self.phase == 'train' and self.epsilon is None:
@@ -45,24 +92,16 @@ class MultiHumanRL(CADRL):
             max_value = float('-inf')
             max_action = None
             for action in self.action_space:
-                next_self_state = self.propagate(state.self_state, action)
-                if self.query_env:
-                    next_human_states, reward, done, info = self.env.onestep_lookahead(action)
-                else:
-                    next_human_states = [self.propagate(human_state, ActionXY(human_state.vx, human_state.vy))
-                                       for human_state in state.human_states]
-                    reward = self.compute_reward(next_self_state, next_human_states)
-                batch_next_states = torch.cat([torch.Tensor([next_self_state + next_human_state]).to(self.device)
-                                              for next_human_state in next_human_states], dim=0)
-                rotated_batch_input = self.rotate(batch_next_states).unsqueeze(0)
-                if self.with_om:
-                    if occupancy_maps is None:
-                        occupancy_maps = self.build_occupancy_maps(next_human_states).unsqueeze(0)
-                    rotated_batch_input = torch.cat([rotated_batch_input, occupancy_maps.to(self.device)], dim=2)
+                rotated_batch_input_window,reward = self.next_state(Rollout=Rollout,action=action, occupancy_maps=occupancy_maps)
+                # print(f'shape of rotated batch {rotated_batch_input_window.shape}, and expected shape = 2,#agents,dim')
                 # VALUE UPDATE
-                if self.name ==  'Naive-MambaRL':
-                    self.model.done = self.done
-                next_state_value = self.model(rotated_batch_input).data.item() #quering the NN here
+                if Rollout.window_size == 1:
+                    rotated_batch_input= rotated_batch_input_window[0] # Do this if temporal window is false or equal to one 
+                    # print(f'shape of input = {rotated_batch_input.shape}')
+                    next_state_value = self.model(rotated_batch_input).data.item() #quering the NN here
+                else:
+                    next_state_value = self.model(rotated_batch_input_window).data.item()
+                # print(rotated_batch_input.shape)
                 value = reward + pow(self.gamma, self.time_step * state.self_state.v_pref) * next_state_value
                 self.action_values.append(value)
                 if value > max_value:
@@ -72,7 +111,10 @@ class MultiHumanRL(CADRL):
                 raise ValueError('Value network is not well trained. ')
 
         if self.phase == 'train':
-            self.last_state = self.transform(state)
+            if self.window_size == 1:
+                self.last_state = self.transform(state)
+            else:
+                self.last_state = self.rollout_transform(Rollout)
 
         return max_action
 
@@ -100,7 +142,33 @@ class MultiHumanRL(CADRL):
             reward = 0
 
         return reward
+    def rollout_transform(self,Rollout:RolloutWindow):
+        """
+        Take the state passed from agent and transform it to the input of value network
 
+        :param state:
+        :return: tensor of shape (T,# of humans, len(state))
+        """
+        occupancy_maps = None
+        for i in range(Rollout.non_zero_states):
+            next_self_state = Rollout.rollout_window[i].self_state
+            next_human_states = Rollout.rollout_window[i].human_states
+            batch_next_states = torch.cat([torch.Tensor([next_self_state + next_human_state]).to(self.device)
+                                            for next_human_state in next_human_states], dim=0)
+            # I don't understand why the authors added the two states? Maybe Chen et al didn't do this and the diverse 4 paper did this
+            rotated_batch_input = self.rotate(batch_next_states).unsqueeze(0)
+            # print(f"In rollout transform {rotated_batch_input.shape}")
+
+            if self.with_om:
+                if occupancy_maps is None:
+                    occupancy_maps = self.build_occupancy_maps(next_human_states).unsqueeze(0)
+                rotated_batch_input = torch.cat([rotated_batch_input, occupancy_maps.to(self.device)], dim=2)
+            if i == 0:
+                rotated_state = rotated_batch_input
+            else:
+                rotated_state = torch.cat((rotated_state,rotated_batch_input), dim = 0).to(self.device)
+        # print(f"In rollout transform {rotated_state.shape}")
+        return rotated_state
     def transform(self, state):
         """
         Take the state passed from agent and transform it to the input of value network

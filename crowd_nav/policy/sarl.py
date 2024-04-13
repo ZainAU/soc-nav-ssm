@@ -12,6 +12,7 @@ class ValueNetwork(nn.Module):
         super().__init__()
         self.self_state_dim = self_state_dim
         self.global_state_dim = mlp1_dims[-1]
+        print(f"input dim {input_dim}")
         self.mlp1 = mlp(input_dim, mlp1_dims, last_relu=True)
         self.mlp2 = mlp(mlp1_dims[-1], mlp2_dims)
         self.with_global_state = with_global_state
@@ -33,6 +34,7 @@ class ValueNetwork(nn.Module):
         :return:
         """
         size = state.shape
+        # print(f'sarl shape{size}')
         self_state = state[:, 0, :self.self_state_dim]
         mlp1_output = self.mlp1(state.view((-1, size[2]))) # embedding e
         mlp2_output = self.mlp2(mlp1_output) # pairwise interaction feature h

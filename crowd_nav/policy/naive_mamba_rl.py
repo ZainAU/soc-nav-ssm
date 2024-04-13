@@ -26,6 +26,7 @@ from mamba_ssm.utils.generation import InferenceParams
 class ValueNetork(nn.Module):
     def __init__(self, 
                  input_dim      :int, 
+                 d_state        :int = 16,
                  device         :str = 'cuda',
                  phase          :str = 'Train', 
                  n_layers     :int = 1,
@@ -50,6 +51,7 @@ class ValueNetork(nn.Module):
                 self.create_block(
                     input_dim,
                     ssm_cfg=None,
+                    d_state = d_state,
                     norm_epsilon=norm_epsilon,
                     rms_norm=False,
                     fused_add_norm=False,
@@ -66,10 +68,12 @@ class ValueNetork(nn.Module):
     def forward(self, state, inference_params=None):
         hidden_states = state
         residual = None
+        
         for layer in self.layers:
             hidden_states, residual = layer(
                 hidden_states, residual, inference_params=inference_params
             )
+            # print(layer.mixer.d_state)
       
        
         value = self.value_layer(hidden_states[:,-1,:])
@@ -79,6 +83,7 @@ class ValueNetork(nn.Module):
     def create_block(
                     self,
                     d_model,
+                    d_state = 100,
                     ssm_cfg=None,
                     norm_epsilon=1e-5,
                     rms_norm=False,
@@ -91,7 +96,7 @@ class ValueNetork(nn.Module):
         if ssm_cfg is None:
             ssm_cfg = {}
         factory_kwargs = {"device": device, "dtype": dtype}
-        mixer_cls = partial(Mamba, layer_idx=layer_idx, **ssm_cfg, **factory_kwargs)
+        mixer_cls = partial(Mamba, layer_idx=layer_idx, d_state = d_state, **ssm_cfg, **factory_kwargs)
         norm_cls = partial(
             nn.LayerNorm if not rms_norm else RMSNorm, eps=norm_epsilon, **factory_kwargs
         )
@@ -107,7 +112,7 @@ class ValueNetork(nn.Module):
     
    
 
-class MambaRL(MultiHumanRL):
+class Naive_MambaRL(MultiHumanRL):
     def __init__(self):
         super().__init__()
         self.name = 'Naive-MambaRL'
@@ -115,12 +120,15 @@ class MambaRL(MultiHumanRL):
     def configure(self,config):
         self.set_common_parameters(config) #check what this does
         self.multiagent_training = config.getboolean('Naive-MambaRL', 'multiagent_training')
+        d_state =config.getint('Naive-MambaRL','d_state')
+        
         # print(f'Multi agent=  {self.multiagent_training}')
         self.device = 'cuda'
         self.model = ValueNetork(input_dim =   self.input_dim(),
                                  device = self.device,
                                  phase = self.phase,
-                                 n_layers=4)
+                                 n_layers=4,
+                                 d_state=d_state)
 
 
         print(self.model.eval())
@@ -136,9 +144,9 @@ class MambaRL(MultiHumanRL):
 
         """
 
-        def dist(human):
-            # sort human order by decreasing distance to the robot
-            return np.linalg.norm(np.array(human.position) - np.array(state.self_state.position))
+        # def dist(human):
+        #     # sort human order by decreasing distance to the robot
+        #     return np.linalg.norm(np.array(human.position) - np.array(state.self_state.position))
 
         # state.human_states = sorted(state.human_states, key=dist, reverse=True)
         

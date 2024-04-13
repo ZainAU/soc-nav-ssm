@@ -75,11 +75,12 @@ def main():
     policy_config = configparser.RawConfigParser()
     policy_config.read(policy_config_file)
     policy.configure(policy_config)
+    window_size = policy.window_size
     model = policy.get_model()
     if policy.trainable:
         if args.model_dir is None:
             parser.error('Trainable policy must be specified with a model weights directory')
-        if policy.name not in ['Naive-MambaRL']:
+        if policy.name not in ['Naive-MambaRL','MambaRL']:
             model.load_state_dict(torch.load(model_weights))
         else:
             model.load_state_dict(load_state_dict_hf(args.model_dir, device=device))
@@ -98,7 +99,7 @@ def main():
     robot = Robot(env_config, 'robot')
     robot.set_policy(policy)
     env.set_robot(robot)
-    explorer = Explorer(env, robot, device, gamma=0.9)
+    explorer = Explorer(env, robot, device, gamma=0.9, window_size=window_size)
 
     policy.set_phase(args.phase)
     policy.set_device(device)

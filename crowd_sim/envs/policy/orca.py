@@ -1,7 +1,11 @@
-import numpy as np
 import rvo2
+import numpy as np
+from typing import Union
 from crowd_sim.envs.policy.policy import Policy
 from crowd_sim.envs.utils.action import ActionXY
+from crowd_nav.utils.rollout_window import RolloutWindow
+from crowd_sim.envs.utils.state import JointState
+
 
 
 class ORCA(Policy):
@@ -79,7 +83,7 @@ class ORCA(Policy):
     def set_phase(self, phase):
         return
 
-    def predict(self, state):
+    def predict(self, Rollout: Union[RolloutWindow,JointState]): #Add rollout window here as well
         """
         Create a rvo2 simulation at each time step and run one step
         Python-RVO2 API: https://github.com/sybrenstuvel/Python-RVO2/blob/master/src/rvo2.pyx
@@ -90,6 +94,12 @@ class ORCA(Policy):
         :param state:
         :return:
         """
+        # State is the current state
+        if type(Rollout) == RolloutWindow:
+            state = Rollout.rollout_window[0]
+        else:
+            state = Rollout
+            
         self_state = state.self_state
         params = self.neighbor_dist, self.max_neighbors, self.time_horizon, self.time_horizon_obst
         if self.sim is not None and self.sim.getNumAgents() != len(state.human_states) + 1:

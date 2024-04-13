@@ -98,6 +98,7 @@ def main():
     policy_config = configparser.RawConfigParser()
     policy_config.read(args.policy_config)
     policy.configure(policy_config)
+    window_size = policy.window_size
     policy.set_device(device)
 
     # configure environment
@@ -108,7 +109,7 @@ def main():
     env.configure(env_config)
     robot = Robot(env_config, 'robot')
     env.set_robot(robot)
-    print("the issue is here")
+   
 
     # read training parameters
     if args.train_config is None:
@@ -132,11 +133,11 @@ def main():
     model = policy.get_model()
     batch_size = train_config.getint('trainer', 'batch_size')
     trainer = Trainer(model, memory, device, batch_size)
-    explorer = Explorer(env, robot, device, memory, policy.gamma, target_policy=policy)
+    explorer = Explorer(env, robot, device, memory, policy.gamma, target_policy=policy, window_size=window_size)
+    # explorer = Explorer(env, robot, device, memory, policy.gamma, target_policy=policy)
 
     # imitation learning
-    print(args.resume)
-    print("Hello")
+
     if args.resume:
         if not os.path.exists(rl_weight_file):
             logging.error('RL weights does not exist')
@@ -165,7 +166,7 @@ def main():
         trainer.optimize_epoch(il_epochs)
 
 
-        if policy.name not in ['Naive-MambaRL']:
+        if policy.name not in ['Naive-MambaRL','MambaRL']:
             torch.save(model.state_dict(), il_weight_file)
         else:
             save_pretrained_mamba(model, args.output_dir)
@@ -220,7 +221,7 @@ def main():
         # So that we can resume from episode 0
         if episode == 1 or episode % checkpoint_interval == 0:
             logging.info("Saving RL model weights.")
-            if policy.name not in ['Naive-MambaRL']:
+            if policy.name not in ['Naive-MambaRL','MambaRL']:
                 torch.save(model.state_dict(), il_weight_file)
             else:
                 save_pretrained_mamba(model, il_weight_file)

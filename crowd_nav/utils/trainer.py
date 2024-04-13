@@ -32,6 +32,7 @@ class Trainer(object):
             epoch_loss = 0
             for data in self.data_loader:
                 inputs, values = data
+                # print(f'shape of input {inputs.shape}')
                 inputs = Variable(inputs)
                 values = Variable(values)
 

@@ -1,6 +1,7 @@
 import logging
 import copy
 import torch
+import torch.nn.functional as F 
 from crowd_sim.envs.utils.info import *
 from crowd_sim.envs.utils.utils import write_results, get_env_code
 import numpy as np
@@ -13,7 +14,7 @@ from crowd_nav.utils.rollout_window import RolloutWindow
 np.seterr(all='raise')
 
 class Explorer(object):
-    def __init__(self, env, robot, device, memory=None, gamma=None, target_policy=None):
+    def __init__(self, env, robot, device, memory=None, gamma=None, target_policy=None, window_size = 10):
         self.env = env
         self.robot = robot
         self.device = device
@@ -21,6 +22,8 @@ class Explorer(object):
         self.gamma = gamma
         self.target_policy = target_policy
         self.target_model = None
+        self.window_size = window_size
+        
 
     def update_target_model(self, target_model):
         self.target_model = copy.deepcopy(target_model)
@@ -49,14 +52,14 @@ class Explorer(object):
         cumulative_rewards = []
         collision_cases = []
         timeout_cases = []
-        window_size = 10 #would eventually need to make a tag out of this
+
         for i in tqdm(range(k)):
             epoch_start = time.perf_counter()
             ob = self.env.reset(phase)
             state = JointState(self.robot.get_full_state(), ob)
-            Rollout = RolloutWindow(window_size = window_size)
+            Rollout = RolloutWindow(window_size = self.window_size)
             # rollout_window = np.zeros([window_size], dtype = JointState) # Shape should be window_size x joint state_size however join state is a single variable/data struct
-            rollout_states = Rollout.rollout_window.copy()
+           
             
             done = False
             states = []
@@ -65,12 +68,15 @@ class Explorer(object):
 
 
             while not done:
+                
                 # Get the current state
                 state = JointState(self.robot.get_full_state(), ob)
                 # Append the current state to rollout_window
                 Rollout.push_to_rollout(state)
-             
-                rollout_states = np.block([[rollout_states],[Rollout.rollout_window]]) 
+                if Rollout.non_zero_states < Rollout.window_size:
+                    Rollout.non_zero_states += 1
+              
+                
 
                 action = self.robot.act(Rollout)
                 ob, reward, done, info = self.env.step(action)
@@ -172,6 +178,17 @@ class Explorer(object):
             write_results(results_path, results)
 
     def update_memory(self, states, actions, rewards, imitation_learning=False):
+        '''
+        rotated_NextStates: Tensor shpae (T, batch, num_humans, dimension )
+        The memory should have a tuple of (rotated_NextStates, value)
+
+        plan:
+        1. print the state_stack.shape in run k episode to see the shape, and see if enumerate can be done
+        2. implement a function of transform that takes in a rollout window
+
+
+        OR MAYBE THE memory should have a rollout window
+        '''
         if self.memory is None or self.gamma is None:
             raise ValueError('Memory or gamma value is not set!')
 
@@ -181,11 +198,22 @@ class Explorer(object):
             # VALUE UPDATE
             if imitation_learning:
                 # define the value of states in IL as cumulative discounted rewards, which is the same in RL
-                state = self.target_policy.transform(state)
+                '''
+                Currently we are not taking temporal information for imitation learning, the 
+                '''
+                if self.window_size == 1:
+                    state = self.target_policy.transform(state)#.unsqueeze(0)
+                else:
+                    # Later add .rollout_transform i.e. take rollout window as input for IL as well
+                    state = self.target_policy.transform(state).unsqueeze(0)
+                    # print(f'state shape in update memory {state.shape}')
+                # print(f"In memory update{state.shape}")
                 # value = pow(self.gamma, (len(states) - 1 - i) * self.robot.time_step * self.robot.v_pref)
                 value = sum([pow(self.gamma, max(t - i, 0) * self.robot.time_step * self.robot.v_pref) * reward
                              * (1 if t >= i else 0) for t, reward in enumerate(rewards)])
             else:
+                # state should be of the shape (T, #agents, dim) if agents is window size >= 1, because in multi human RL we implemented the predict method such that it outputs shape (#agents, dim) if window size == 1 other wise (T, #agents, dim) 
+                
                 if i == len(states) - 1:
                     # terminal state
                     value = reward
@@ -193,10 +221,21 @@ class Explorer(object):
                     next_state = states[i + 1]
                     gamma_bar = pow(self.gamma, self.robot.time_step * self.robot.v_pref)
                     value = reward + gamma_bar * self.target_model(next_state.unsqueeze(0)).data.item()
+            # Make a function to pad 
+            if self.window_size != 1:
+                state = self.pad_state(state)
+                # print(f'state shape in update memory {state.shape}')
+
             value = torch.Tensor([value]).to(self.device)
 
             self.memory.push((state, value))
-
+    def pad_state(self, state):
+        if len(state) != self.window_size:
+            padd = (0, 0, 0, 0, 0, self.window_size -state.shape[0])
+            state = F.pad(state, padd, "constant", 0)
+            # print(f'window size {self.window_size}')
+            # print(f'{state.shape}')
+        return state
 
 def average(input_list):
     #logging.debug(f'Input list:\n{input_list}')

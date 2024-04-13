@@ -10033,19 +10033,28 @@
 2023-12-13 02:17:28, INFO: TRAIN in episode 9999 has success rate: 1.00, collision rate: 0.00, nav time: 11.75, total reward: 0.2977
 2023-12-13 03:03:29, INFO: TEST  in episode 10000 has success rate: 1.00, collision rate: 0.00, nav time: 10.46, total reward: 0.3411
 2023-12-13 03:03:29, INFO: Frequency of being in danger: 0.02 and average min separate distance in danger: 0.16
-2024-04-08 10:36:03, INFO: Current git head hash code: %s
-2024-04-08 10:36:03, INFO: Using device: cpu
-2024-04-08 10:36:03, INFO: Policy: SARL w/ global state
-2024-04-08 10:36:03, INFO: Env config file: data/output_SARL-copy/env_multi-test_bl-cr.config
-2024-04-08 10:36:30, INFO: Current git head hash code: %s
-2024-04-08 10:36:30, INFO: Using device: cpu
-2024-04-08 10:36:30, INFO: Policy: SARL w/ global state
-2024-04-08 10:36:30, INFO: Env config file: data/output_SARL-copy/env_multi-test_bl-cr.config
-2024-04-08 10:36:54, INFO: Current git head hash code: %s
-2024-04-08 10:36:54, INFO: Using device: cpu
-2024-04-08 10:36:54, INFO: Policy: SARL w/ global state
-2024-04-08 10:36:54, INFO: Env config file: data/output_SARL-copy/env_multi-test_bl-cr.config
-2024-04-08 10:37:34, INFO: Current git head hash code: %s
-2024-04-08 10:37:34, INFO: Using device: cpu
-2024-04-08 10:37:34, INFO: Policy: SARL w/ global state
-2024-04-08 10:37:34, INFO: Env config file: data/output_SARL-copy/env_multi-test_bl-cr.config
+2024-04-12 16:53:56, INFO: Current git head hash code: %s
+2024-04-12 16:53:56, INFO: Using device: cpu
+2024-04-12 18:58:30, INFO: Current git head hash code: %s
+2024-04-12 18:58:30, INFO: Using device: cpu
+2024-04-12 18:58:30, INFO: Policy: SARL w/ global state
+2024-04-12 19:00:33, INFO: Current git head hash code: %s
+2024-04-12 19:00:33, INFO: Using device: cpu
+2024-04-12 19:00:33, INFO: Policy: SARL w/ global state
+2024-04-12 19:00:33, INFO: Env config file: data/output_SARL-copy/env_multi-test_bl-cr.config
+2024-04-12 19:02:20, INFO: Current git head hash code: %s
+2024-04-12 19:02:20, INFO: Using device: cpu
+2024-04-12 19:02:20, INFO: Policy: SARL w/ global state
+2024-04-12 19:02:20, INFO: Env config file: data/output_SARL-copy/env_multi-test_bl-cr.config
+2024-04-12 19:03:07, INFO: Current git head hash code: %s
+2024-04-12 19:03:07, INFO: Using device: cpu
+2024-04-12 19:03:07, INFO: Policy: SARL w/ global state
+2024-04-12 19:03:07, INFO: Env config file: data/output_SARL-copy/env_multi-test_bl-cr.config
+2024-04-12 19:03:07, INFO: human number: 5
+2024-04-12 19:03:07, INFO: Randomizing human radius and preferred speed
+2024-04-12 19:03:07, INFO: Training simulation: circle_crossing, test simulation: circle_crossing
+2024-04-12 19:03:07, INFO: Square width: 10.0, circle width: 4.0
+2024-04-12 19:03:07, INFO: Loaded reinforcement learning trained weights. Resuming training
+2024-04-12 19:03:07, INFO: Agent is visible and has holonomic kinematic constraint
+2024-04-12 19:03:07, INFO: Current learning rate: 0.001000
+2024-04-12 19:03:08, INFO: Resuming training at episode: 5000

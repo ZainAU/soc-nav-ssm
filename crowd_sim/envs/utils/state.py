@@ -48,3 +48,12 @@ class JointState(object):
 
         self.self_state = self_state
         self.human_states = human_states
+
+    
+class Zero_JointState(JointState):
+    def __init__(self, human_number):
+        self.self_state = FullState(0,0,0,0,0,0,0,0,0)
+        self.human_states = []
+        for i in range(human_number):
+            self.human_states.append(FullState(0,0,0,0,0,0,0,0,0))
+        
