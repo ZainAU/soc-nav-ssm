@@ -28,13 +28,14 @@ class Trainer(object):
             raise ValueError('Learning rate is not set!')
         if self.data_loader is None:
             self.data_loader = DataLoader(self.memory, self.batch_size, shuffle=True)
+    
         average_epoch_loss = 0
         for epoch in range(num_epochs):
             epoch_loss = 0
             for data in self.data_loader:
                 inputs, values = data
                 # import numpy as np
-                inputs = inputs[0]
+                # inputs = inputs[0]
                 
                 inputs = Variable(inputs)
                 values = Variable(values)
@@ -58,21 +59,22 @@ class Trainer(object):
             self.data_loader = DataLoader(self.memory, self.batch_size, shuffle=True)
         losses = 0
         for _ in range(num_batches):
-            for inputs, values in iter(self.data_loader):
-                inputs = inputs[0]
-                inputs = Variable(inputs)
-                values = Variable(values)
+            inputs, values = next(iter(self.data_loader))
+            # print(f'input {(inputs[0].shape)}')
+            inputs = inputs[0]
+            inputs = Variable(inputs)
+            values = Variable(values)
 
-                self.optimizer.zero_grad()
-                
-                    
-                outputs = self.model(inputs)
-                loss = self.criterion(outputs, values)
-                loss.backward()
-                self.optimizer.step()
-                losses += loss.data.item()
+            self.optimizer.zero_grad()
+            
+                  
+            outputs = self.model(inputs)
+            loss = self.criterion(outputs, values)
+            loss.backward()
+            self.optimizer.step()
+            losses += loss.data.item()
 
-            average_loss = losses / num_batches
-            #logging.debug('Average loss : %.2E', average_loss)
+        average_loss = losses / num_batches
+        #logging.debug('Average loss : %.2E', average_loss)
 
         return average_loss
