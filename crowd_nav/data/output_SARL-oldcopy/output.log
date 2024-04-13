@@ -1,0 +1,27 @@
+2024-04-12 00:41:31, INFO: Current git head hash code: %s
+2024-04-12 00:41:31, INFO: Using device: cpu
+2024-04-12 00:41:31, INFO: The window size is 1
+2024-04-12 00:41:31, INFO: Policy: OM-SARL w/ global state
+2024-04-12 00:41:31, INFO: Env config file: configs/env_multi-test_bl-cr.config
+2024-04-12 00:41:31, INFO: human number: 5
+2024-04-12 00:41:31, INFO: Randomizing human radius and preferred speed
+2024-04-12 00:41:31, INFO: Training simulation: circle_crossing, test simulation: circle_crossing
+2024-04-12 00:41:31, INFO: Square width: 10.0, circle width: 4.0
+2024-04-12 00:41:31, INFO: Current learning rate: 0.010000
+2024-04-12 00:41:46, INFO: TRAIN has success rate: 0.57, collision rate: 0.43, nav time: 9.86±1.361051, total reward: 0.1049)
+2024-04-12 00:41:59, INFO: Finish imitation learning. Weights saved.
+2024-04-12 00:41:59, INFO: Experience set size: 9621/100000
+2024-04-12 00:41:59, INFO: Agent is visible and has holonomic kinematic constraint
+2024-04-12 00:41:59, INFO: Current learning rate: 0.001000
+2024-04-12 00:49:09, INFO: VAL   in episode 0 has success rate: 0.64, collision rate: 0.36, nav time: 8.30±0.115878, total reward: 0.1725)
+2024-04-12 00:49:09, INFO: Frequency of being in danger: 0.19 and average min separate distance in danger: 0.10±0.1
+2024-04-12 16:52:20, INFO: Current git head hash code: %s
+2024-04-12 16:52:20, INFO: Using device: cpu
+2024-04-12 16:52:20, INFO: The window size is 1
+2024-04-12 16:52:20, INFO: Policy: OM-SARL w/ global state
+2024-04-12 16:52:20, INFO: Env config file: data/output_SARL-copy/env_multi-test_bl-cr.config
+2024-04-12 16:52:20, INFO: human number: 5
+2024-04-12 16:52:20, INFO: Randomizing human radius and preferred speed
+2024-04-12 16:52:20, INFO: Training simulation: circle_crossing, test simulation: circle_crossing
+2024-04-12 16:52:20, INFO: Square width: 10.0, circle width: 4.0
+2024-04-12 16:52:20, ERROR: RL weights does not exist
