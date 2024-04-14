@@ -99,11 +99,16 @@ class MultiHumanRL(CADRL):
                     rotated_batch_input= rotated_batch_input_window[0] # Do this if temporal window is false or equal to one 
                     # print(f'shape of input = {rotated_batch_input.shape}')
                     next_state_value = self.model(rotated_batch_input).data.item() #quering the NN here
+                    # print(f'next value {next_state_value}')
                 else:
-                    next_state_value = self.model(rotated_batch_input_window).data.item()
+                    next_state_value = self.model(rotated_batch_input_window).data#.item()
+                    next_state_value = next_state_value[-1,-1].item()
+                    # print(f'next value {next_state_value}')
+
                 # print(rotated_batch_input.shape)
                 value = reward + pow(self.gamma, self.time_step * state.self_state.v_pref) * next_state_value
                 self.action_values.append(value)
+                # print(value, max_value)
                 if value > max_value:
                     max_value = value
                     max_action = action

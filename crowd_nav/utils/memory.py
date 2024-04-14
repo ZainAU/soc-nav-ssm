@@ -26,3 +26,4 @@ class ReplayMemory(Dataset):
 
     def clear(self):
         self.memory = list()
+    

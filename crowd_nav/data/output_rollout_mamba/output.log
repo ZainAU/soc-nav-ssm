@@ -1,18 +1,18 @@
-2024-04-13 16:45:37, INFO: Current git head hash code: %s
-2024-04-13 16:45:37, INFO: Using device: cuda:0
-2024-04-13 16:45:37, INFO: The window size is 2
-2024-04-13 16:45:38, INFO: Policy:MambaRL
-2024-04-13 16:45:38, INFO: Env config file: configs/env.config
-2024-04-13 16:45:38, INFO: human number: 5
-2024-04-13 16:45:38, INFO: Not randomizing human radius and preferred speed
-2024-04-13 16:45:38, INFO: Training simulation: circle_crossing, test simulation: circle_crossing
-2024-04-13 16:45:38, INFO: Square width: 10.0, circle width: 4.0
-2024-04-13 16:45:38, INFO: Current learning rate: 0.010000
-2024-04-13 16:45:42, INFO: TRAIN has success rate: 1.00, collision rate: 0.00, nav time: 9.85±0.794339, total reward: 0.2664)
-2024-04-13 16:45:52, INFO: Finish imitation learning. Weights saved.
-2024-04-13 16:45:52, INFO: Experience set size: 3938/100000
-2024-04-13 16:45:52, INFO: Agent is visible and has holonomic kinematic constraint
-2024-04-13 16:45:52, INFO: Current learning rate: 0.001000
-2024-04-13 16:50:02, INFO: VAL   in episode 0 has success rate: 0.00, collision rate: 0.00, nav time: 25.00±0.000000, total reward: -0.0006)
-2024-04-13 16:50:02, INFO: Frequency of being in danger: 0.00 and average min separate distance in danger: 0.18±0.0
-2024-04-13 16:50:14, INFO: TRAIN in episode 0 has success rate: 0.00, collision rate: 0.00, nav time: 25.00±0.000000, total reward: 0.0000)
+2024-04-14 02:48:48, INFO: Current git head hash code: %s
+2024-04-14 02:48:48, INFO: Using device: cuda:0
+2024-04-14 02:48:48, INFO: The window size is 10
+2024-04-14 02:48:49, INFO: Policy:MambaRL
+2024-04-14 02:48:49, INFO: Env config file: configs/env.config
+2024-04-14 02:48:49, INFO: human number: 5
+2024-04-14 02:48:49, INFO: Not randomizing human radius and preferred speed
+2024-04-14 02:48:49, INFO: Training simulation: circle_crossing, test simulation: circle_crossing
+2024-04-14 02:48:49, INFO: Square width: 10.0, circle width: 4.0
+2024-04-14 02:48:49, INFO: Current learning rate: 0.010000
+2024-04-14 02:48:49, INFO: TRAIN has success rate: 1.00, collision rate: 0.00, nav time: 10.08±1.196058, total reward: 0.2682)
+2024-04-14 02:48:49, INFO: Optimizing epoch
+2024-04-14 02:48:50, INFO: Finish imitation learning. Weights saved.
+2024-04-14 02:48:50, INFO: Experience set size: 121/100000
+2024-04-14 02:48:50, INFO: Agent is visible and has holonomic kinematic constraint
+2024-04-14 02:48:50, INFO: Current learning rate: 0.001000
+2024-04-14 02:50:11, INFO: VAL   in episode 0 has success rate: 0.00, collision rate: 0.00, nav time: 25.00±0.000000, total reward: 0.0000)
+2024-04-14 02:50:11, INFO: some error occured while calcutating the std 

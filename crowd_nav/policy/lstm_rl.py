@@ -7,8 +7,9 @@ from crowd_nav.policy.multi_human_rl import MultiHumanRL
 
 
 class ValueNetwork1(nn.Module):
-    def __init__(self, input_dim, self_state_dim, mlp_dims, lstm_hidden_dim):
+    def __init__(self, input_dim, self_state_dim, mlp_dims, lstm_hidden_dim, device = 'cuda'):
         super().__init__()
+        self.device = device
         self.self_state_dim = self_state_dim
         self.lstm_hidden_dim = lstm_hidden_dim
         self.mlp = mlp(self_state_dim + lstm_hidden_dim, mlp_dims)
@@ -25,20 +26,23 @@ class ValueNetwork1(nn.Module):
         self_state = state[:, 0, :self.self_state_dim]
         # logging.info(f'LSTM state shape: {state.shape}')
         # human_state = state[:, :, self.self_state_dim:]
-        h0 = torch.zeros(1, size[0], self.lstm_hidden_dim)
-        c0 = torch.zeros(1, size[0], self.lstm_hidden_dim)
+        # print(self.device)
+        h0 = torch.zeros(1, size[0], self.lstm_hidden_dim,device= self.device)
+        c0 = torch.zeros(1, size[0], self.lstm_hidden_dim,device= self.device)
         # logging.info(f'LSTM hidden shape: {h0.shape}')
 
         output, (hn, cn) = self.lstm(state, (h0, c0))
         hn = hn.squeeze(0)
         joint_state = torch.cat([self_state, hn], dim=1)
+        print(f'{joint_state.shape}')
         value = self.mlp(joint_state)
         return value
 
 
 class ValueNetwork2(nn.Module):
-    def __init__(self, input_dim, self_state_dim, mlp1_dims, mlp_dims, lstm_hidden_dim):
+    def __init__(self, input_dim, self_state_dim, mlp1_dims, mlp_dims, lstm_hidden_dim,device = 'cuda'):
         super().__init__()
+        self.device = device
         self.self_state_dim = self_state_dim
         self.lstm_hidden_dim = lstm_hidden_dim
         self.mlp1 = mlp(input_dim, mlp1_dims)
@@ -59,8 +63,8 @@ class ValueNetwork2(nn.Module):
         mlp1_output = self.mlp1(state)
         mlp1_output = torch.reshape(mlp1_output, (size[0], size[1], -1))
 
-        h0 = torch.zeros(1, size[0], self.lstm_hidden_dim)
-        c0 = torch.zeros(1, size[0], self.lstm_hidden_dim)
+        h0 = torch.zeros(1, size[0], self.lstm_hidden_dim,device= self.device)
+        c0 = torch.zeros(1, size[0], self.lstm_hidden_dim,device= self.device)
         output, (hn, cn) = self.lstm(mlp1_output, (h0, c0))
         hn = hn.squeeze(0)
         joint_state = torch.cat([self_state, hn], dim=1)
@@ -83,14 +87,14 @@ class LstmRL(MultiHumanRL):
         with_interaction_module = config.getboolean('lstm_rl', 'with_interaction_module')
         if with_interaction_module:
             mlp1_dims = [int(x) for x in config.get('lstm_rl', 'mlp1_dims').split(', ')]
-            self.model = ValueNetwork2(self.input_dim(), self.self_state_dim, mlp1_dims, mlp_dims, global_state_dim)
+            self.model = ValueNetwork2(self.input_dim(), self.self_state_dim, mlp1_dims, mlp_dims, global_state_dim, device = self.device)
         else:
-            self.model = ValueNetwork1(self.input_dim(), self.self_state_dim, mlp_dims, global_state_dim)
+            self.model = ValueNetwork1(self.input_dim(), self.self_state_dim, mlp_dims, global_state_dim, device = self.device)
         self.multiagent_training = config.getboolean('lstm_rl', 'multiagent_training')
         logging.info('Policy: {}LSTM-RL {} pairwise interaction module'.format(
             'OM-' if self.with_om else '', 'w/' if with_interaction_module else 'w/o'))
 
-    def predict(self, state):
+    def predict(self, Rollout):
         """
         Input state is the joint state of robot concatenated with the observable state of other agents
 
@@ -99,9 +103,11 @@ class LstmRL(MultiHumanRL):
 
         """
 
-        def dist(human):
-            # sort human order by decreasing distance to the robot
-            return np.linalg.norm(np.array(human.position) - np.array(state.self_state.position))
+        # def dist(human):
+        #     # sort human order by decreasing distance to the robot
+        #     return np.linalg.norm(np.array(human.position) - np.array(state.self_state.position))
 
-        state.human_states = sorted(state.human_states, key=dist, reverse=True)
+        # state.human_states = sorted(state.human_states, key=dist, reverse=True)
+        Rollout.sort_distance()
+
         return super().predict(state)

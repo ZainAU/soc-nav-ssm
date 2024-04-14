@@ -26,6 +26,7 @@ from crowd_nav.utils.rollout_window import RolloutWindow
 class ValueNetork(nn.Module):
     def __init__(self, 
                  input_dim      :int, 
+                 self_state_dim :int,
                  d_state        :int = 16,
                  device         :str = 'cuda',
                  phase          :str = 'Train', 
@@ -35,7 +36,8 @@ class ValueNetork(nn.Module):
                  fused_add_norm=False,
                  norm_f = False,
                  dtype=None,
-                 window_size = None
+                 window_size = None,
+                 latent_state_dim = 16,
                  ):
         if not window_size:
             raise ValueError("Window size should not be none") 
@@ -45,21 +47,24 @@ class ValueNetork(nn.Module):
         ###### Generating joint states: Look into methods that use pretrained embedding generators like word2vec rightnow we will use
          
         #######
-        
-        self.config = MambaConfig(input_dim, n_layer=n_layers, rms_norm=rms_norm, fused_add_norm=fused_add_norm)
+        super().__init__()
+        self.window_size = window_size
+        self.self_state_dim = self_state_dim
+        self.latent_state_dim = latent_state_dim
+        self.encoder_layer = nn.GRU(input_dim,latent_state_dim,batch_first= True)
         self.norm_f = norm_f
         self.fused_add_norm = fused_add_norm
         self.phase = phase
         self.done = False
         self.done_is_true = False
-        super().__init__()
         self.device = device
         factory_kwargs = {"device": device, "dtype": dtype}
-        
+        mamba_model_dim = self_state_dim + latent_state_dim
+        self.config = MambaConfig(mamba_model_dim, n_layer=n_layers, rms_norm=rms_norm, fused_add_norm=fused_add_norm)
         self.layers = nn.ModuleList(
             [
                 self.create_block(
-                    input_dim,
+                    mamba_model_dim,
                     d_state = d_state,
                     ssm_cfg=None,
                     norm_epsilon=norm_epsilon,
@@ -73,23 +78,51 @@ class ValueNetork(nn.Module):
             ]
         )
         
-        self.value_layer = nn.Linear(in_features=input_dim,out_features=1, bias = True, device=device,dtype=dtype)
-
+        self.value_layer = nn.Linear(in_features=mamba_model_dim,out_features=1, bias = True, device=device,dtype=dtype)
+        self.flatten_layer = nn.Flatten(start_dim=1, end_dim=2)
     def forward(self, state:torch.Tensor, inference_params=None):
         shape = state.shape
         if len(shape) == 4:
-            hidden_states = state.view(shape[0],shape[1]*shape[2],shape[3])
-            # print(hidden_states.shape) if hidden_states.shape[0] != 1 else 0 
+            
+            for i in range(shape[1]):  
+                # print(f'self state shape {state.shape} and i ={i}')
+                self_state = state[:,i, 0, :self.self_state_dim]
+                h0 = torch.zeros(1, shape[0], self.latent_state_dim,device= self.device)
+                spatial_feature = state[:,i,:,:]
+                output,hn = self.encoder_layer(spatial_feature,h0)
+                # (B, T, latents space)
+                hn = hn.squeeze(0)
+                joint_state = torch.cat([self_state, hn], dim=1)
+                # print(joint_state.shape)
+                # print(f"This is the shape {hn.shape, joint_state.shape}")
+                if i == 0:
+                    hidden_states = joint_state.unsqueeze(0)
+                else:
+                    hidden_states = torch.cat((hidden_states, joint_state.unsqueeze(0)), dim = 0)
+                # print('before',hidden_states.shape)
+            _shape = hidden_states.shape
+            # print(_shape)
+            hidden_states = hidden_states.view(_shape[1],_shape[0],_shape[2])
+            # print('after',hidden_states.shape)
+            # if 1:
+            #     hidden_states = state.view(shape[0],shape[1]*shape[2],shape[3])
+            # else:
+            #     pass
+            # print(hidden_states.shape, shape) if hidden_states.shape[0] != 1 else 0 
+
         else:
+           
             hidden_states = state
         residual = None
         for layer in self.layers:
             hidden_states, residual = layer(
                 hidden_states, residual, inference_params=inference_params
             )
-      
-       
-        value = self.value_layer(hidden_states[:,-1,:])
+        value = hidden_states
+        value = self.value_layer(hidden_states)
+        value = self.flatten_layer( value)
+
+        # print(f'shape before entering value {value.shape}')       
         # print(f'shape of state {hidden_states[1,-1,:]}\nshape of value{value.shape}')
         return value    
 
@@ -137,6 +170,7 @@ class MambaRL(MultiHumanRL):
         # print(f'Multi agent=  {self.multiagent_training}')
         self.device = 'cuda'
         self.model = ValueNetork(input_dim =   self.input_dim(),
+                                 self_state_dim =self.self_state_dim ,
                                  device = self.device,
                                  phase = self.phase,
                                  n_layers=4,

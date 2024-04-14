@@ -215,6 +215,7 @@ def main():
         episode += 1 #shouldnt this be +k
 
         if episode % target_update_interval == 0:
+            logging.info(f'target model is being updated')
             explorer.update_target_model(model)
 
         #if episode != 0 and episode % checkpoint_interval == 0:
