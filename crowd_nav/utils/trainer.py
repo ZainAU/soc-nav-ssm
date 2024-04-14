@@ -64,13 +64,13 @@ class Trainer(object):
         logging.info(f'Optimizing batch')
         self.model.train()
         # q = 0
-        # x = [_ for _ in self.data_loader]
+        # x = [_ for _ in iter(self.data_loader)]
         # print(f'Length of iter { len(x)}')
-        # print(type(x[1]))
+        # print(x[1])
         # print(x[1])
         for _ in tqdm(range(num_batches)):
             inputs, values = next(iter(self.data_loader))
-            q +=1
+            # q +=1
             
             # print(f'input {(inputs[0].shape)}')
             # inputs = inputs[0]

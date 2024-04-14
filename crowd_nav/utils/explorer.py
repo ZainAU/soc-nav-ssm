@@ -196,12 +196,13 @@ class Explorer(object):
         # print(type(states[0]))
         if self.memory is None or self.gamma is None:
             raise ValueError('Memory or gamma value is not set!')
-
+        k = self.window_size  # making this variable cause its easier to write k instead of typing it multiple times
         for i, state in enumerate(states):
             # i is essentially the time step here
             reward = rewards[i]
             # value = []
             # VALUE UPDATE
+            values = []
             if imitation_learning:
                 # define the value of states in IL as cumulative discounted rewards, which is the same in RL
                 '''
@@ -212,17 +213,21 @@ class Explorer(object):
                 else:
                     # Later add .rollout_transform i.e. take rollout window as input for IL as well
                     state = self.target_policy.transform(state).unsqueeze(0)
-                    # print(f'state shape in update memory {state.shape}')
-                # print(f"In memory update{state.shape}")
-                # value = pow(self.gamma, (len(states) - 1 - i) * self.robot.time_step * self.robot.v_pref)
-                value = sum([pow(self.gamma, max(t - i, 0) * self.robot.time_step * self.robot.v_pref) * reward
-                             * (1 if t >= i else 0) for t, reward in enumerate(rewards)])
-                x = np.zeros(self.window_size)
-                x[self.window_size-1:] = value
-                value = x
+                for j in range(np.min([k-1, i])+1):
+                    values.append(sum([pow(self.gamma, max(t - i - j, 0) * self.robot.time_step * self.robot.v_pref) * reward
+                             * (1 if t >= i - j else 0) for t, reward in enumerate(rewards)]))
+                # value = sum([pow(self.gamma, max(t - i, 0) * self.robot.time_step * self.robot.v_pref) * reward
+                #              * (1 if t >= i else 0) for t, reward in enumerate(rewards)])
+                # x = np.zeros(self.window_size)
+                # x[self.window_size-1:] = value
+                # value = x
+                # values.reverse()
+                # value = torch.zeros(self.window_size)
+                # value[k-1-np.min([k-1, i]):] = torch.Tensor(values)
+
             else:
                 # state should be of the shape (T, #agents, dim) if agents is window size >= 1, because in multi human RL we implemented the predict method such that it outputs shape (#agents, dim) if window size == 1 other wise (T, #agents, dim) 
-                values = []
+                
                 # if i == len(states) - 1:
                 #     # terminal state
                 #     value = reward
@@ -232,7 +237,7 @@ class Explorer(object):
                 #     value = reward + gamma_bar * self.target_model(next_state.unsqueeze(0)).data.item()
                     
                 gamma_bar = pow(self.gamma, self.robot.time_step * self.robot.v_pref)
-                k = self.window_size  # making this variable cause its easier to write k instead of typing it multiple times
+                
                 for j in range(np.min([k-1, i])+1 ):
                     if i-j== len(states) - 1:
                         values.append(reward)
@@ -240,9 +245,9 @@ class Explorer(object):
                         reward = rewards[i-j]
                         state = states[i-j + 1]
                         values.append(reward + gamma_bar * self.target_model(state.unsqueeze(0)).data[-1,-1].item())
-                values.reverse()
-                value = torch.zeros(self.window_size)
-                value[k-1-np.min([k-1, i]):] = torch.Tensor(values)
+            values.reverse()
+            value = torch.zeros(self.window_size)
+            value[k-1-np.min([k-1, i]):] = torch.Tensor(values)
 
 
 
