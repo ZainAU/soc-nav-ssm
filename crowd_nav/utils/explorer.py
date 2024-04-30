@@ -39,7 +39,7 @@ class Explorer(object):
         return np.concatenate((np.array([x]),tensor[:-1]))
     # @profile
     def run_k_episodes(self, k, phase, update_memory=False, imitation_learning=False, episode=None,
-                       print_test=True, results_dir=None):
+                       print_test=True, results_dir=None, print_failure = True):
         self.robot.policy.set_phase(phase)
         success_times = []
         collision_times = []
@@ -162,6 +162,10 @@ class Explorer(object):
                 logging.info('some error occured while calcutating the std ')
         # array of [env, succ, coll, time, std_time, rew, std_rew, disc_freq,
         #           danger_d_min, std_danger, d_min_overall, std_overall]
+        if print_failure:
+            logging.info('Collision cases: ' + ' '.join([str(x) for x in collision_cases]))
+            logging.info('Timeout cases: ' + ' '.join([str(x) for x in timeout_cases]))
+
         if results_dir is not None:
             results_path = os.path.join(results_dir, 'results.csv')
             logging.info(f"results_path: {results_path}")
@@ -216,26 +220,10 @@ class Explorer(object):
                 for j in range(np.min([k-1, i])+1):
                     values.append(sum([pow(self.gamma, max(t - i - j, 0) * self.robot.time_step * self.robot.v_pref) * reward
                              * (1 if t >= i - j else 0) for t, reward in enumerate(rewards)]))
-                # value = sum([pow(self.gamma, max(t - i, 0) * self.robot.time_step * self.robot.v_pref) * reward
-                #              * (1 if t >= i else 0) for t, reward in enumerate(rewards)])
-                # x = np.zeros(self.window_size)
-                # x[self.window_size-1:] = value
-                # value = x
-                # values.reverse()
-                # value = torch.zeros(self.window_size)
-                # value[k-1-np.min([k-1, i]):] = torch.Tensor(values)
+          
 
             else:
-                # state should be of the shape (T, #agents, dim) if agents is window size >= 1, because in multi human RL we implemented the predict method such that it outputs shape (#agents, dim) if window size == 1 other wise (T, #agents, dim) 
-                
-                # if i == len(states) - 1:
-                #     # terminal state
-                #     value = reward
-                # else:
-                #     next_state = states[i + 1]
-                #     gamma_bar = pow(self.gamma, self.robot.time_step * self.robot.v_pref)
-                #     value = reward + gamma_bar * self.target_model(next_state.unsqueeze(0)).data.item()
-                    
+               
                 gamma_bar = pow(self.gamma, self.robot.time_step * self.robot.v_pref)
                 
                 for j in range(np.min([k-1, i])+1 ):
@@ -245,9 +233,11 @@ class Explorer(object):
                         reward = rewards[i-j]
                         state = states[i-j + 1]
                         values.append(reward + gamma_bar * self.target_model(state.unsqueeze(0)).data[-1,-1].item())
+                # values.append(2333) # This will create an error if the target network samples it 
             values.reverse()
             value = torch.zeros(self.window_size)
             value[k-1-np.min([k-1, i]):] = torch.Tensor(values)
+            # value[self.window_size -len(values):] = torch.Tensor(values)
 
 
 

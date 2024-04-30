@@ -90,6 +90,7 @@ class MultiHumanRL(CADRL):
         else:
             self.action_values = list()
             max_value = float('-inf')
+            max_values =[]
             max_action = None
             for action in self.action_space:
                 rotated_batch_input_window,reward = self.next_state(Rollout=Rollout,action=action, occupancy_maps=occupancy_maps)
@@ -101,8 +102,8 @@ class MultiHumanRL(CADRL):
                     next_state_value = self.model(rotated_batch_input).data.item() #quering the NN here
                     # print(f'next value {next_state_value}')
                 else:
-                    next_state_value = self.model(rotated_batch_input_window).data#.item()
-                    next_state_value = next_state_value[-1,-1].item()
+                    temporal_values = self.model(rotated_batch_input_window).data#.item()
+                    next_state_value = temporal_values[-1,-1].item()
                     # print(f'next value {next_state_value}')
 
                 # print(rotated_batch_input.shape)
@@ -111,6 +112,7 @@ class MultiHumanRL(CADRL):
                 # print(value, max_value)
                 if value > max_value:
                     max_value = value
+                    max_values = temporal_values
                     max_action = action
             if max_action is None:
                 raise ValueError('Value network is not well trained. ')
@@ -120,7 +122,11 @@ class MultiHumanRL(CADRL):
                 self.last_state = self.transform(state)
             else:
                 self.last_state = self.rollout_transform(Rollout)
-
+        # print('begin')
+        # print(max_values[0])
+        # for i in range(len(max_values[0])):
+        #     print(f'v({len(max_values[0]) -i}) = {max_values[0][i]}')
+        # print('finish')
         return max_action
 
     def compute_reward(self, nav, humans):

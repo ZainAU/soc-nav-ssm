@@ -36,6 +36,7 @@ class Trainer(object):
             self.model.train()
             for data in self.data_loader:
                 inputs, values = data
+                
                 # import numpy as np
                 # inputs = inputs[0]
                 
@@ -60,6 +61,7 @@ class Trainer(object):
             raise ValueError('Learning rate is not set!')
         if self.data_loader is None:
             self.data_loader = DataLoader(self.memory, self.batch_size, shuffle=True)
+        # print(len(self.data_loader.dataset), len(len(self.data_loader.dataset.indices)))
         losses = 0
         logging.info(f'Optimizing batch')
         self.model.train()
@@ -74,6 +76,9 @@ class Trainer(object):
             
             # print(f'input {(inputs[0].shape)}')
             # inputs = inputs[0]
+            # print(len(values))
+            # assert len(inputs) == len(values)
+            
             inputs = Variable(inputs)
             values = Variable(values)
 

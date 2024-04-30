@@ -1,0 +1,76 @@
+2024-04-25 18:17:50, INFO: Current git head hash code: %s
+2024-04-25 18:17:50, INFO: Using device: cuda:0
+2024-04-25 18:17:50, INFO: The window size is 2
+2024-04-25 18:17:50, INFO: Policy:MambaRL
+2024-04-25 18:17:50, INFO: Env config file: configs/env.config
+2024-04-25 18:17:50, INFO: human number: 5
+2024-04-25 18:17:50, INFO: Not randomizing human radius and preferred speed
+2024-04-25 18:17:50, INFO: Training simulation: circle_crossing, test simulation: circle_crossing
+2024-04-25 18:17:50, INFO: Square width: 10.0, circle width: 4.0
+2024-04-25 18:17:50, INFO: Current learning rate: 0.010000
+2024-04-25 18:17:52, INFO: TRAIN has success rate: 1.00, collision rate: 0.00, nav time: 9.93±0.785104, total reward: 0.2678)
+2024-04-25 18:17:52, INFO: Collision cases: 
+2024-04-25 18:17:52, INFO: Timeout cases: 
+2024-04-25 18:17:52, INFO: Optimizing epoch
+2024-04-25 18:17:55, INFO: Finish imitation learning. Weights saved.
+2024-04-25 18:17:55, INFO: Experience set size: 1192/100000
+2024-04-25 18:17:55, INFO: Agent is visible and has holonomic kinematic constraint
+2024-04-25 18:17:55, INFO: Current learning rate: 0.001000
+2024-04-25 18:20:18, INFO: VAL   in episode 0 has success rate: 0.00, collision rate: 0.00, nav time: 25.00±0.000000, total reward: 0.0000)
+2024-04-25 18:20:18, INFO: some error occured while calcutating the std 
+2024-04-25 18:20:18, INFO: Collision cases: 
+2024-04-25 18:20:18, INFO: Timeout cases: 0 1 2 3 4
+2024-04-25 18:20:35, INFO: TRAIN in episode 0 has success rate: 0.00, collision rate: 0.00, nav time: 25.00±0.000000, total reward: 0.0000)
+2024-04-25 18:20:35, INFO: Collision cases: 
+2024-04-25 18:20:35, INFO: Timeout cases: 0
+2024-04-25 18:20:35, INFO: Optimizing batch
+2024-04-25 18:20:36, INFO: Saving RL model weights.
+2024-04-25 18:20:50, INFO: TRAIN in episode 1 has success rate: 0.00, collision rate: 0.00, nav time: 25.00±0.000000, total reward: 0.0000)
+2024-04-25 18:20:50, INFO: Collision cases: 
+2024-04-25 18:20:50, INFO: Timeout cases: 0
+2024-04-25 18:20:50, INFO: Optimizing batch
+2024-04-25 18:21:04, INFO: TRAIN in episode 2 has success rate: 0.00, collision rate: 0.00, nav time: 25.00±0.000000, total reward: 0.0000)
+2024-04-25 18:21:04, INFO: Collision cases: 
+2024-04-25 18:21:04, INFO: Timeout cases: 0
+2024-04-25 18:21:04, INFO: Optimizing batch
+2024-04-25 18:21:19, INFO: TRAIN in episode 3 has success rate: 0.00, collision rate: 0.00, nav time: 25.00±0.000000, total reward: 0.0000)
+2024-04-25 18:21:19, INFO: Collision cases: 
+2024-04-25 18:21:19, INFO: Timeout cases: 0
+2024-04-25 18:21:19, INFO: Optimizing batch
+2024-04-25 18:21:36, INFO: TRAIN in episode 4 has success rate: 0.00, collision rate: 0.00, nav time: 25.00±0.000000, total reward: 0.0000)
+2024-04-25 18:21:36, INFO: Collision cases: 
+2024-04-25 18:21:36, INFO: Timeout cases: 0
+2024-04-25 18:21:36, INFO: Optimizing batch
+2024-04-25 18:21:51, INFO: TRAIN in episode 5 has success rate: 0.00, collision rate: 0.00, nav time: 25.00±0.000000, total reward: 0.0000)
+2024-04-25 18:21:51, INFO: Collision cases: 
+2024-04-25 18:21:51, INFO: Timeout cases: 0
+2024-04-25 18:21:51, INFO: Optimizing batch
+2024-04-25 18:22:05, INFO: TRAIN in episode 6 has success rate: 0.00, collision rate: 0.00, nav time: 25.00±0.000000, total reward: 0.0000)
+2024-04-25 18:22:05, INFO: Collision cases: 
+2024-04-25 18:22:05, INFO: Timeout cases: 0
+2024-04-25 18:22:05, INFO: Optimizing batch
+2024-04-25 18:22:20, INFO: TRAIN in episode 7 has success rate: 0.00, collision rate: 0.00, nav time: 25.00±0.000000, total reward: 0.0000)
+2024-04-25 18:22:20, INFO: Collision cases: 
+2024-04-25 18:22:20, INFO: Timeout cases: 0
+2024-04-25 18:22:20, INFO: Optimizing batch
+2024-04-25 18:22:35, INFO: TRAIN in episode 8 has success rate: 0.00, collision rate: 0.00, nav time: 25.00±0.000000, total reward: 0.0000)
+2024-04-25 18:22:35, INFO: Collision cases: 
+2024-04-25 18:22:35, INFO: Timeout cases: 0
+2024-04-25 18:22:35, INFO: Optimizing batch
+2024-04-25 18:22:50, INFO: TRAIN in episode 9 has success rate: 0.00, collision rate: 0.00, nav time: 25.00±0.000000, total reward: 0.0000)
+2024-04-25 18:22:50, INFO: Collision cases: 
+2024-04-25 18:22:50, INFO: Timeout cases: 0
+2024-04-25 18:22:50, INFO: Optimizing batch
+2024-04-25 18:22:51, INFO: Saving RL model weights.
+2024-04-25 18:23:08, INFO: TRAIN in episode 10 has success rate: 0.00, collision rate: 0.00, nav time: 25.00±0.000000, total reward: 0.0000)
+2024-04-25 18:23:08, INFO: Collision cases: 
+2024-04-25 18:23:08, INFO: Timeout cases: 0
+2024-04-25 18:23:08, INFO: Optimizing batch
+2024-04-25 18:23:26, INFO: TRAIN in episode 11 has success rate: 0.00, collision rate: 0.00, nav time: 25.00±0.000000, total reward: 0.0000)
+2024-04-25 18:23:26, INFO: Collision cases: 
+2024-04-25 18:23:26, INFO: Timeout cases: 0
+2024-04-25 18:23:26, INFO: Optimizing batch
+2024-04-25 18:23:42, INFO: TRAIN in episode 12 has success rate: 0.00, collision rate: 0.00, nav time: 25.00±0.000000, total reward: -0.0225)
+2024-04-25 18:23:42, INFO: Collision cases: 
+2024-04-25 18:23:42, INFO: Timeout cases: 0
+2024-04-25 18:23:42, INFO: Optimizing batch
