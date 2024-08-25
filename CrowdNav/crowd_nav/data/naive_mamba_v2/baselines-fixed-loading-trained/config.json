@@ -1,0 +1,1 @@
+{"d_model": 13, "n_layer": 4, "vocab_size": 50277, "ssm_cfg": {}, "rms_norm": false, "residual_in_fp32": true, "fused_add_norm": false, "pad_vocab_size_multiple": 8}

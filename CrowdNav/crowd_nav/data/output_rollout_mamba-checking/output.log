@@ -1,0 +1,19 @@
+2024-04-15 23:43:59, INFO: Current git head hash code: %s
+2024-04-15 23:43:59, INFO: Using device: cuda:0
+2024-04-15 23:43:59, INFO: The window size is 2
+2024-04-15 23:43:59, INFO: Policy:MambaRL
+2024-04-15 23:43:59, INFO: Env config file: configs/env.config
+2024-04-15 23:43:59, INFO: human number: 5
+2024-04-15 23:43:59, INFO: Not randomizing human radius and preferred speed
+2024-04-15 23:43:59, INFO: Training simulation: circle_crossing, test simulation: circle_crossing
+2024-04-15 23:43:59, INFO: Square width: 10.0, circle width: 4.0
+2024-04-15 23:43:59, INFO: Current learning rate: 0.010000
+2024-04-15 23:44:03, INFO: TRAIN has success rate: 1.00, collision rate: 0.00, nav time: 9.82±0.689656, total reward: 0.2677)
+2024-04-15 23:44:03, INFO: Optimizing epoch
+2024-04-15 23:44:06, INFO: Finish imitation learning. Weights saved.
+2024-04-15 23:44:06, INFO: Experience set size: 1179/100000
+2024-04-15 23:44:06, INFO: Agent is visible and has holonomic kinematic constraint
+2024-04-15 23:44:06, INFO: Current learning rate: 0.001000
+2024-04-15 23:48:14, INFO: VAL   in episode 0 has success rate: 0.00, collision rate: 0.00, nav time: 25.00±0.000000, total reward: -0.0203)
+2024-04-15 23:48:14, INFO: Frequency of being in danger: 0.08 and average min separate distance in danger: 0.16±0.0
+2024-04-15 23:48:39, INFO: TRAIN in episode 0 has success rate: 0.00, collision rate: 0.00, nav time: 25.00±0.000000, total reward: 0.0000)

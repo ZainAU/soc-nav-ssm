@@ -1,0 +1,15 @@
+2024-04-12 00:50:05, INFO: Current git head hash code: %s
+2024-04-12 00:50:05, INFO: Using device: cpu
+2024-04-12 00:50:05, INFO: The window size is 1
+2024-04-12 00:50:05, INFO: Policy: LSTM-RL w/o pairwise interaction module
+2024-04-12 00:50:05, INFO: Env config file: configs/env_multi-test_bl-cr.config
+2024-04-12 00:50:05, INFO: human number: 5
+2024-04-12 00:50:05, INFO: Randomizing human radius and preferred speed
+2024-04-12 00:50:05, INFO: Training simulation: circle_crossing, test simulation: circle_crossing
+2024-04-12 00:50:05, INFO: Square width: 10.0, circle width: 4.0
+2024-04-12 00:50:05, INFO: Current learning rate: 0.010000
+2024-04-12 00:50:14, INFO: TRAIN has success rate: 0.53, collision rate: 0.47, nav time: 9.31±0.797137, total reward: 0.0899)
+2024-04-12 00:50:21, INFO: Finish imitation learning. Weights saved.
+2024-04-12 00:50:21, INFO: Experience set size: 9136/100000
+2024-04-12 00:50:21, INFO: Agent is visible and has holonomic kinematic constraint
+2024-04-12 00:50:21, INFO: Current learning rate: 0.001000

@@ -1,0 +1,11 @@
+2024-03-29 08:32:34, INFO: Using device: cpu
+2024-03-29 08:32:34, INFO: Policy: LSTM-RL w/o pairwise interaction module
+2024-03-29 08:32:34, INFO: Env config file: configs/env_multi-test_dn-cr.config
+2024-03-29 08:32:34, INFO: human number: 10
+2024-03-29 08:32:34, INFO: Randomizing human radius and preferred speed
+2024-03-29 08:32:34, INFO: Training simulation: circle_crossing, test simulation: circle_crossing
+2024-03-29 08:32:34, INFO: Square width: 10.0, circle width: 4.0
+2024-03-29 08:32:34, INFO: Agent is visible and has holonomic kinematic constraint
+2024-03-29 08:38:14, INFO: TEST  has success rate: 0.66, collision rate: 0.28, nav time: 14.48±5.631331, total reward: 0.0853)
+2024-03-29 08:38:14, INFO: Frequency of being in danger: 0.14 and average min separate distance in danger: 0.10±0.1
+2024-03-29 08:38:14, INFO: results_path: data/lstmrl/eval/results.csv

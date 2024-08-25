@@ -10,7 +10,20 @@ from crowd_nav.policy.policy_factory import policy_factory
 from crowd_sim.envs.utils.robot import Robot
 from crowd_sim.envs.policy.orca import ORCA
 from crowd_sim.envs.policy.sf import SF
+import json
+from transformers.utils.hub import cached_file
+from transformers.utils import WEIGHTS_NAME, CONFIG_NAME
 
+def load_config_hf(model_name):
+    resolved_archive_file = cached_file(model_name, CONFIG_NAME, _raise_exceptions_for_missing_entries=False)
+    return json.load(open(resolved_archive_file))
+
+
+def load_state_dict_hf(model_name, device=None, dtype=None):
+    # If not fp32, then we don't want to load directly to the GPU
+    mapped_device = "cpu" if dtype not in [torch.float32, None] else device
+    resolved_archive_file = cached_file(model_name, WEIGHTS_NAME, _raise_exceptions_for_missing_entries=False)
+    return torch.load(resolved_archive_file, map_location=mapped_device)
 
 def main():
     parser = argparse.ArgumentParser('Parse configuration file')
@@ -62,10 +75,15 @@ def main():
     policy_config = configparser.RawConfigParser()
     policy_config.read(policy_config_file)
     policy.configure(policy_config)
+    window_size = policy.window_size
+    model = policy.get_model()
     if policy.trainable:
         if args.model_dir is None:
             parser.error('Trainable policy must be specified with a model weights directory')
-        policy.get_model().load_state_dict(torch.load(model_weights))
+        if policy.name not in ['Naive-MambaRL','MambaRL']:
+            model.load_state_dict(torch.load(model_weights))
+        else:
+            model.load_state_dict(load_state_dict_hf(args.model_dir, device=device))
 
     # configure environment
     env_config = configparser.RawConfigParser()
@@ -81,7 +99,7 @@ def main():
     robot = Robot(env_config, 'robot')
     robot.set_policy(policy)
     env.set_robot(robot)
-    explorer = Explorer(env, robot, device, gamma=0.9)
+    explorer = Explorer(env, robot, device, gamma=0.9, window_size=window_size)
 
     policy.set_phase(args.phase)
     policy.set_device(device)

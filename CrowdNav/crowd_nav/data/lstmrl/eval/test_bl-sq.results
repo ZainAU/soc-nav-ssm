@@ -1,0 +1,11 @@
+2024-03-29 13:27:19, INFO: Using device: cpu
+2024-03-29 13:27:19, INFO: Policy: LSTM-RL w/o pairwise interaction module
+2024-03-29 13:27:19, INFO: Env config file: configs/env_multi-test_bl-sq.config
+2024-03-29 13:27:19, INFO: human number: 5
+2024-03-29 13:27:19, INFO: Randomizing human radius and preferred speed
+2024-03-29 13:27:19, INFO: Training simulation: square_crossing, test simulation: square_crossing
+2024-03-29 13:27:19, INFO: Square width: 10.0, circle width: 4.0
+2024-03-29 13:27:19, INFO: Agent is visible and has holonomic kinematic constraint
+2024-03-29 13:31:05, INFO: TEST  has success rate: 0.88, collision rate: 0.08, nav time: 12.11±3.174113, total reward: 0.2341)
+2024-03-29 13:31:05, INFO: Frequency of being in danger: 0.09 and average min separate distance in danger: 0.12±0.1
+2024-03-29 13:31:05, INFO: results_path: data/lstmrl/eval/results.csv

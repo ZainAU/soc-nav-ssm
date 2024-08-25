@@ -1,0 +1,15 @@
+2024-04-12 00:51:23, INFO: Current git head hash code: %s
+2024-04-12 00:51:23, INFO: Using device: cpu
+2024-04-12 00:51:23, INFO: The window size is 1
+2024-04-12 00:51:23, INFO: Policy: CADRL without occupancy map
+2024-04-12 00:51:23, INFO: Env config file: configs/env_multi-test_bl-cr.config
+2024-04-12 00:51:23, INFO: human number: 5
+2024-04-12 00:51:23, INFO: Randomizing human radius and preferred speed
+2024-04-12 00:51:23, INFO: Training simulation: circle_crossing, test simulation: circle_crossing
+2024-04-12 00:51:23, INFO: Square width: 10.0, circle width: 4.0
+2024-04-12 00:51:23, INFO: Current learning rate: 0.010000
+2024-04-12 00:51:31, INFO: TRAIN has success rate: 1.00, collision rate: 0.00, nav time: 8.46±0.364657, total reward: 0.4097)
+2024-04-12 00:51:39, INFO: Finish imitation learning. Weights saved.
+2024-04-12 00:51:39, INFO: Experience set size: 10146/100000
+2024-04-12 00:51:39, INFO: Agent is visible and has holonomic kinematic constraint
+2024-04-12 00:51:39, INFO: Current learning rate: 0.001000
